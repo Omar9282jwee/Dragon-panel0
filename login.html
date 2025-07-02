@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>جارٍ تسجيل الدخول...</title>
+</head>
+<body>
+  <h2>جارٍ تحميل بياناتك من ديسكورد...</h2>
+  <div id="user"></div>
+
+  <script>
+    // 1. استخراج access_token من الرابط
+    const hash = window.location.hash.substr(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get("access_token");
+
+    // 2. لو فيه توكن، نجيب بيانات المستخدم
+    if (accessToken) {
+      fetch("https://discord.com/api/users/@me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      .then(response => response.json())
+      .then(user => {
+        // 3. عرض بيانات المستخدم
+        document.getElementById("user").innerHTML = `
+          <h3>أهلاً ${user.username}#${user.discriminator}</h3>
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" width="100" />
+          <p>ID: ${user.id}</p>
+        `;
+      })
+      .catch(error => {
+        document.getElementById("user").innerText = "فشل تحميل البيانات.";
+      });
+    } else {
+      document.getElementById("user").innerText = "لم يتم تسجيل الدخول.";
+    }
+  </script>
+</body>
+</html>
